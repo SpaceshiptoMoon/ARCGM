@@ -1,4 +1,15 @@
 clc
+clear
+close all
+
+% 路径自定位（可从任意目录运行）
+this_dir = fileparts(mfilename('fullpath'));
+repo_root = fileparts(this_dir);
+figure_dir = fullfile(repo_root, 'figure');
+text_dir = fullfile(repo_root, 'text');
+if ~exist(figure_dir, 'dir'), mkdir(figure_dir); end
+if ~exist(text_dir, 'dir'), mkdir(text_dir); end
+
 m = 200; n =200; k_true = 10;
 OS = 5;
 max_iter = 200;
@@ -76,10 +87,10 @@ lgd.FontSize = 10;
 lgd.Box = 'on';
 lgd.EdgeColor = 'black';
 
-filename_eps = sprintf('../figure/n=%d_m=%d_r=%d_os=%d.eps', n, m, k_true, OS);
+filename_eps = fullfile(figure_dir, sprintf('n=%d_m=%d_r=%d_os=%d.eps', n, m, k_true, OS));
 saveas(gcf, filename_eps, 'epsc');
 
-filename_txt = sprintf('../text/n=%d_m=%d_r=%d_os=%d.txt', n, m, k_true, OS);
+filename_txt = fullfile(text_dir, sprintf('n=%d_m=%d_r=%d_os=%d.txt', n, m, k_true, OS));
 fid = fopen(filename_txt, 'w');
 fprintf('\n比较结果:\n');
 fprintf(titleStr);

@@ -51,8 +51,11 @@ def normalize_data(data):
 
 
 def save_processed_data(data, mask, output_dir="."):
+    """保存流量矩阵与观测掩码。
+    mask 语义：1=观测，0=缺失（与 MATLAB 实验脚本 Omega 约定一致）。
+    """
     data_df = pd.DataFrame(data)
-    mask_df = pd.DataFrame(mask)
+    mask_df = pd.DataFrame(mask.astype(int))
 
     data_path = os.path.join(output_dir, "PE_data.csv")
     mask_path = os.path.join(output_dir, "PE_mask.csv")
@@ -96,7 +99,6 @@ def matrix_completion_with_svd(X_nan, rank=20, max_iters=10, verbose=True):
 
 def graph_regularized_matrix_factorization(data_with_nan, adj, max_rows, rank=20, alpha=0.1, max_iters=10):
     from sklearn.decomposition import NMF
-    from scipy.sparse.linalg import eigsh
 
     D = np.diag(np.sum(adj, axis=1))
     L = D - adj
@@ -201,7 +203,7 @@ def process_traffic_data(file_path, max_rows=10000, output_dir=".", plot_sensor=
     missing_mask, data_with_nan = create_mask(data)
 
     print("\n4. Saving processed data...")
-    save_processed_data(data, missing_mask, output_dir)
+    save_processed_data(data, ~missing_mask, output_dir)
 
     print("\n5. Normalizing data...")
     data_scaled, scaler = normalize_data(data)
@@ -272,5 +274,23 @@ def process_traffic_data(file_path, max_rows=10000, output_dir=".", plot_sensor=
 
 
 if __name__ == "__main__":
-    file_path = "data.npz"
-    process_traffic_data(file_path, max_rows=10000, output_dir=".")
+    import argparse
+
+    _THIS_DIR = os.path.dirname(os.path.abspath(__file__))
+    _REPO_ROOT = os.path.dirname(os.path.dirname(_THIS_DIR))
+    _DATA_DIR = os.path.join(_REPO_ROOT, "data")
+
+    parser = argparse.ArgumentParser(description="处理 PEMS 交通流数据，生成流量矩阵与观测掩码")
+    parser.add_argument("--data", default=os.path.join(_DATA_DIR, "data.npz"),
+                        help="PEMS npz 文件路径（需含 'data' 键，形状 T×N×C；可选 'adj' 键）")
+    parser.add_argument("--output-dir", default=_DATA_DIR,
+                        help="输出目录（默认 repo/data/，与 MATLAB traffic_experiment.m 读取路径一致）")
+    parser.add_argument("--max-rows", type=int, default=10000,
+                        help="截取前 N 个时间步（默认 10000）")
+    parser.add_argument("--plot-sensor", type=int, default=0,
+                        help="可视化用的传感器索引（默认 0）")
+    args = parser.parse_args()
+
+    os.makedirs(args.output_dir, exist_ok=True)
+    process_traffic_data(args.data, max_rows=args.max_rows,
+                         output_dir=args.output_dir, plot_sensor=args.plot_sensor)

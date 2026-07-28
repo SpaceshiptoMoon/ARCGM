@@ -1,0 +1,16 @@
+# Python 依赖（数据预处理与评估脚本）
+# 安装：uv pip install -r requirements.txt   （或 pip install -r requirements.txt）
+
+numpy
+pandas
+scikit-learn
+scipy
+matplotlib
+seaborn
+Pillow
+tabulate
+
+# 以下仅 data_process/r_estimate/Verify_.py 需要（PSNR/SSIM 独立核算）
+torch
+torchvision
+piq

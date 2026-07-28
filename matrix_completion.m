@@ -1,4 +1,27 @@
-function [X, errors] = matrix_completion(A_observed, Omega, k, max_iter, tol, method)
+function [X, errors, metrics] = matrix_completion(A_observed, Omega, k, max_iter, tol, method)
+%MATRIX_COMPLETION 加速黎曼共轭梯度法求解低秩矩阵补全问题。
+%
+%   [X, errors] = matrix_completion(A_observed, Omega, k, max_iter, tol, method)
+%   [X, errors, metrics] = matrix_completion(...)  % 额外返回逐迭代 MAE/RMSE
+%
+% 输入：
+%   A_observed - 观测矩阵（未观测位置置 0）
+%   Omega      - 观测掩码，logical 矩阵，true 表示该位置已观测
+%   k          - 目标低秩
+%   max_iter   - 最大迭代次数
+%   tol        - 梯度范数收敛阈值
+%   method     - CG 变体：'HZ' | 'DY' | 'FR' | 'PRP' | 'HS' | 'NHS' | 'Alg1'
+%
+% 输出：
+%   X       - 补全后的稠密矩阵
+%   errors  - 逐迭代黎曼梯度 Frobenius 范数（单列向量）
+%   metrics - 可选，struct，字段：
+%             .MAE  - 逐迭代观测集上的 MAE
+%             .RMSE - 逐迭代观测集上的 RMSE
+%
+% 线搜索参数：rho=1e-4（Armijo），sigma=0.6（曲率）。
+% 流形运算：retraction（SVD 回撤）、vector_transport（投影式向量传输）、
+%           compute_riemannian_gradient（切空间投影）、P_Omega（观测投影）。
 
     rho = 1e-4;
     sigma = 0.6;
@@ -16,11 +39,19 @@ function [X, errors] = matrix_completion(A_observed, Omega, k, max_iter, tol, me
     f_prev = objective_function(X, A_observed, Omega);
 
     errors = zeros(max_iter, 1);
+    mae = zeros(max_iter, 1);
+    rmse = zeros(max_iter, 1);
 
 
    for t = 1:max_iter
 
         errors(t) = norm(grad_prev, 'fro');
+
+        % 观测集上的逐迭代 MAE / RMSE（供 recommender 等需要误差收敛曲线的实验）
+        X_full_curr = X.U * X.S * X.V';
+        resid_curr = P_Omega(X_full_curr - A_observed, Omega);
+        mae(t) = sum(abs(resid_curr(:))) / sum(Omega(:));
+        rmse(t) = norm(resid_curr, 'fro') / sqrt(sum(Omega(:)));
 
         alpha = wolfe_line_search(X, eta_prev, A_observed, Omega, k, ...
                                  f_prev, grad_prev, rho, sigma, alpha_init);
@@ -77,6 +108,8 @@ function [X, errors] = matrix_completion(A_observed, Omega, k, max_iter, tol, me
         if errors(t) <= tol
             fprintf('收敛于迭代 %d，残差: %.4e\n', t, errors(t));
             errors = errors(1:t);
+            mae = mae(1:t);
+            rmse = rmse(1:t);
             break;
         end
 
@@ -84,6 +117,9 @@ function [X, errors] = matrix_completion(A_observed, Omega, k, max_iter, tol, me
             fprintf('达到最大迭代次数，残差: %.4e\n', errors(t));
         end
     end
+
+    metrics.MAE = mae(1:numel(errors));
+    metrics.RMSE = rmse(1:numel(errors));
 
     X = X.U * X.S * X.V';
 end

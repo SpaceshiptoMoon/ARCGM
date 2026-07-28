@@ -1,13 +1,23 @@
+import argparse
+import os
 import pandas as pd
 import numpy as np
 from sklearn.metrics import mean_squared_error, mean_absolute_error
-from sklearn.decomposition import randomized_svd
-from tabulate import tabulate
+from sklearn.decomposition import TruncatedSVD
+
+# 本文件位于 repo/data_process/recommendation_system/，仓库根为上两级
+_THIS_DIR = os.path.dirname(os.path.abspath(__file__))
+_REPO_ROOT = os.path.dirname(os.path.dirname(_THIS_DIR))
+_DATA_DIR = os.path.join(_REPO_ROOT, "data")
 
 
-def load_rating_data():
-    rate_data = pd.read_csv("rating_fillna.csv")
-    rate_mask = pd.read_csv("rating_mask.csv")
+def load_rating_data(rate_path=None, mask_path=None):
+    if rate_path is None:
+        rate_path = os.path.join(_DATA_DIR, "rating_fillna.csv")
+    if mask_path is None:
+        mask_path = os.path.join(_DATA_DIR, "rating_mask.csv")
+    rate_data = pd.read_csv(rate_path)
+    rate_mask = pd.read_csv(mask_path)
     return rate_data, rate_mask
 
 
@@ -157,10 +167,12 @@ def svd_impute_zeros(X, rank=50, max_iter=50, verbose=False):
             X_filled[missing_mask[:, i], i] = col_means[i]
 
     for iter_num in range(max_iter):
-        U, Sigma, Vt = randomized_svd(X_filled, n_components=rank)
+        svd = TruncatedSVD(n_components=rank, random_state=0)
+        U = svd.fit_transform(X_filled)
+        Sigma = svd.singular_values_
+        Vt = svd.components_
 
         X_reconstructed = U @ np.diag(Sigma) @ Vt
-
         X_filled[missing_mask] = X_reconstructed[missing_mask]
 
         if verbose:

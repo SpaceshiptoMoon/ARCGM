@@ -1,0 +1,128 @@
+# ============================================================
+# ARCGM_Code_Part .gitignore
+# 原则：只跟踪源代码与文档；数据/产物/缓存/编辑器文件一律不入库
+# ============================================================
+
+# ----- 数据与实验产物（用户自备或脚本生成）-----
+data/
+results/
+figure/
+text/
+output/
+
+# ----- 大数据 / 模型权重 / 数值产物 -----
+*.npz
+*.mat
+*.h5
+*.hdf5
+*.npy
+*.pkl
+*.pickle
+*.parquet
+*.feather
+
+# ----- 图像 / 视频产物（避免误提交大图）-----
+*.eps
+*.psd
+*.tif
+*.tiff
+*.bmp
+*.raw
+# 注：PNG/JPG 不全局忽略——README 等文档可能需要示意小图
+
+# ----- Python -----
+__pycache__/
+*.py[cod]
+*.pyo
+*.egg-info/
+*.egg
+.venv/
+venv/
+env/
+.env
+.env.*
+!.env.example
+.pytest_cache/
+.ruff_cache/
+.mypy_cache/
+.coverage
+htmlcov/
+.ipynb_checkpoints/
+
+# ----- MATLAB -----
+*.asv
+slprj/
+*.mex*
+*.mexa64
+*.mexw64
+*.mexmaci64
+.matlab/
+*.mlappinstall
+
+# ----- LaTeX / 论文编译产物（若后续引入论文源码）-----
+*.aux
+*.bbl
+*.blg
+*.fdb_latexmk
+*.fls
+*.synctex.gz
+*.synctex(busy)
+*.toc
+*.lof
+*.lot
+*.out
+*.nav
+*.snm
+*.vrb
+*.bcf
+*.run.xml
+*.idx
+*.ilg
+*.ind
+*.xdv
+*.dvi
+
+# ----- 日志 / 临时 / 备份 -----
+*.log
+*.out
+*.tmp
+*.temp
+*.bak
+*.backup
+*.swp
+*.swo
+*~
+*.orig
+
+# ----- 打包 / 压缩（避免把大压缩包提交进仓库）-----
+*.zip
+*.tar
+*.tar.gz
+*.tgz
+*.7z
+*.rar
+*.gz
+
+# ----- 机密文件兜底（防止误提交）-----
+*.key
+*.pem
+*.crt
+*.p12
+credentials*
+secrets*
+
+# ----- 编辑器 / IDE -----
+.vscode/
+.idea/
+*.code-workspace
+.history/
+
+# ----- 操作系统 -----
+.DS_Store
+Thumbs.db
+desktop.ini
+ehthumbs.db
+$RECYCLE.BIN/
+
+# ----- 包管理锁文件保留跟踪（不忽略）-----
+# uv.lock / poetry.lock / package-lock.json 应入库以保证可复现

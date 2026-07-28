@@ -1,8 +1,6 @@
 from PIL import Image
 import numpy as np
 import torch
-import torchvision.transforms as T
-from PIL import Image
 import os
 from pathlib import Path
 
@@ -91,11 +89,27 @@ def writer_txt(dir_path, image_path):
 
 
 if __name__ == "__main__":
-    # dir_path = r"C:\Users\xl\Desktop\论文二\results\rank80\os0.7"
-    # image_path = r"C:\Users\xl\Desktop\论文二\results\rank80\rank_80_image.png"
-    # writer_txt(dir_path, image_path)
-    image = Image.open(r"C:\Users\xl\Desktop\论文二\results\rank50\block100\HZ.png") 
-    image_origin = (np.array(Image.open(r"C:\Users\xl\Desktop\论文二\results\rank50\rank_50_image.png")) / 65535.0 * 255).astype(np.uint8)
-    psnr = calculate_psnr(image_origin, np.array(image))
-    ssim = calculate_ssim_piq(image_origin, np.array(image))
-    print(psnr, ssim)
+    import argparse
+
+    _THIS_DIR = os.path.dirname(os.path.abspath(__file__))
+    _REPO_ROOT = os.path.dirname(os.path.dirname(_THIS_DIR))
+    _RESULTS_DIR = os.path.join(_REPO_ROOT, "results")
+
+    parser = argparse.ArgumentParser(description="用 piq 独立核算图像 PSNR/SSIM，与 MATLAB 侧对照")
+    parser.add_argument("--recovered", help="单图模式：恢复图路径")
+    parser.add_argument("--original", help="单图模式：原图路径（16-bit PNG 按 65535 归一再转 8 位）")
+    parser.add_argument("--dir", help="批量模式：存放各方法恢复图 (HZ.png 等) 的目录")
+    parser.add_argument("--origin", help="批量模式：原图路径")
+    args = parser.parse_args()
+
+    if args.dir and args.origin:
+        writer_txt(args.dir, args.origin)
+        print(f"结果已写入 {os.path.join(args.dir, 'result.txt')}")
+    elif args.recovered and args.original:
+        image_origin = (np.array(Image.open(args.original)) / 65535.0 * 255).astype(np.uint8)
+        image = np.array(Image.open(args.recovered))
+        psnr = calculate_psnr(image_origin, image)
+        ssim = calculate_ssim_piq(image_origin, image)
+        print(f"PSNR={psnr:.2f}  SSIM={ssim:.4f}")
+    else:
+        parser.error("请提供 --recovered + --original（单图）或 --dir + --origin（批量）")

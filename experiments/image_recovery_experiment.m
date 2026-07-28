@@ -1,13 +1,23 @@
+clc
+clear
+close all
+
+% 路径自定位（可从任意目录运行）
+this_dir = fileparts(mfilename('fullpath'));
+repo_root = fileparts(this_dir);
+results_dir = fullfile(repo_root, 'results');
+
+% 实验参数
 rank = 80;
-os = 0.7;
-base_dir = '../results/';
-rank_dir = fullfile(base_dir, sprintf('rank%d', rank));
-output_filename = sprintf('rank_%d_image.png', rank);
-img_path = fullfile(rank_dir, output_filename);
-fprintf('读取低秩图像: %s\n', img_path);
+os = 0.7;          % 缺失比例：保留 (1-os) 的像素作为观测
 max_iter = 100;
 tol = 1e-12;
 methods = {'HZ', 'DY', 'FR', 'PRP', 'HS', 'NHS', 'Alg1'};
+
+% 读取低秩图（由 data_process/image/create_lowrank_image.m(rank) 生成）
+rank_dir = fullfile(results_dir, sprintf('rank%d', rank));
+img_path = fullfile(rank_dir, sprintf('rank_%d_image.png', rank));
+fprintf('读取低秩图像: %s\n', img_path);
 
 img_original = imread(img_path);
 if size(img_original, 3) > 1
@@ -16,13 +26,10 @@ end
 img_original = im2double(img_original);
 
 rng(123);
-mask = rand(size(img_original)) > os;
+mask = rand(size(img_original)) > os;     % true = 缺失
 img_damaged = img_original .* mask;
 
-base_dir = '../results';
-rank_dir = fullfile(base_dir, sprintf('rank%d', rank));
 save_dir = fullfile(rank_dir, sprintf('os%.1f', os));
-
 if ~exist(save_dir, 'dir')
     mkdir(save_dir);
 end

@@ -151,26 +151,36 @@ def svd_analysis(matrix, matrix_name="Observation Matrix", variance_threshold1=0
 
 
 if __name__ == "__main__":
-    # 示例: 分析灰度图像矩阵
+    import argparse
+
+    _THIS_DIR = os.path.dirname(os.path.abspath(__file__))
+    _REPO_ROOT = os.path.dirname(os.path.dirname(_THIS_DIR))
+    _RESULTS_DIR = os.path.join(_REPO_ROOT, "results")
+
+    parser = argparse.ArgumentParser(description="对矩阵做 SVD 分析，辅助选择矩阵补全的初始秩")
+    parser.add_argument("--image", default=os.path.join(_RESULTS_DIR, "rank60", "original_grayscale.png"),
+                        help="待分析的灰度图路径")
+    parser.add_argument("--output", default=os.path.join(_THIS_DIR, "output"),
+                        help="图表输出目录")
+    parser.add_argument("--format", default="png", choices=["png", "eps"], help="图表格式")
+    parser.add_argument("--max-k", type=int, default=100, help="近似误差分析的最大 k 值")
+    args = parser.parse_args()
+
     print("=== Image Matrix SVD Analysis ===")
-
-    # 读取图像并转换为灰度矩阵
-    image_path = r"C:\Users\xl\Desktop\论文二\results\rank60\original_grayscale.png"
-
-    image = Image.open(image_path)
+    image = Image.open(args.image)
     image_array = np.array(image)
     print(f"Successfully read image, shape: {image_array.shape}")
-    
-    # 进行SVD分析，使用0.97和0.99阈值，最大k值设为50
+
     k_recommended, singular_values, cumulative_var = svd_analysis(
-        image_array, 
-        matrix_name="Image Grayscale Matrix", 
+        image_array,
+        matrix_name="Image Grayscale Matrix",
         variance_threshold1=0.97,
         variance_threshold2=0.99,
-        max_k=100,  # 可以调整这个参数来控制近似误差分析的范围
-        save_directory=r"C:\Users\xl\Desktop\论文二\coding\r_estimate_py\output",
-        save_format="eps"  # 默认保存为PNG格式，可改为"eps"以保存为EPS格式
+        max_k=args.max_k,
+        save_directory=args.output,
+        save_format=args.format,
     )
-    
+
     print(f"\nRecommended rank {k_recommended} for matrix completion or compression")
-    print(f"Cumulative explained variance of first {k_recommended} singular values: {cumulative_var[k_recommended-1]:.3%}")
+    print(f"Cumulative explained variance of first {k_recommended} singular values: "
+          f"{cumulative_var[k_recommended-1]:.3%}")
