@@ -124,5 +124,9 @@ desktop.ini
 ehthumbs.db
 $RECYCLE.BIN/
 
+# ----- Claude Code / AI 助手本地配置（不入库）-----
+CLAUDE.md
+.claude/
+
 # ----- 包管理锁文件保留跟踪（不忽略）-----
 # uv.lock / poetry.lock / package-lock.json 应入库以保证可复现
