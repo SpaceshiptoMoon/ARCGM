@@ -17,10 +17,10 @@ This repository contains the MATLAB implementation and the experimental framewor
 *"A Safeguarded Accelerated Riemannian Conjugate-Gradient Method for Low-Rank Matrix Completion"*.
 
 It implements the safeguarded accelerated Riemannian conjugate-gradient (ARCG) method with a
-strong Wolfe line search for **low-rank matrix completion** — recovering a low-rank matrix `X`
+standard Wolfe line search for **low-rank matrix completion** — recovering a low-rank matrix `X`
 from a small set of observed entries `P_Ω(X)` of a matrix `A`. The proposed method combines an
 improved Hestenes–Stiefel-type (NHS) coefficient with a secant-based scaling of the accepted
-line-search step, safeguarded by strong Wolfe acceptance and restart on failure of uniform
+line-search step, safeguarded by standard Wolfe acceptance and restart on failure of uniform
 descent / norm bounds. Seven CG update variants share one unified interface and are compared
 across five application scenarios: synthetic low-rank recovery, grayscale image inpainting,
 block-missing image recovery, traffic-flow completion, and movie-rating prediction.
@@ -134,9 +134,9 @@ argument:
 | `PRP`    | Polak–Ribière–Polyak |
 | `HS`     | Hestenes–Stiefel |
 | `NHS`    | improved Hestenes–Stiefel-type (hybrid, non-negative) — the coefficient used by the proposed method |
-| `Alg1`   | **the proposed safeguarded accelerated variant**: NHS coefficient + secant-based scaling of the accepted step, with safeguarded acceptance (strong Wolfe) and restart on failure of uniform descent / norm bounds |
+| `Alg1`   | **the proposed safeguarded accelerated variant**: NHS coefficient + secant-based scaling of the accepted step, with safeguarded acceptance (standard Wolfe) and restart on failure of uniform descent / norm bounds |
 
-**Wolfe line search** uses the strong Wolfe conditions (Armijo `ρ = 1e-4`, curvature `σ = 0.6`).
+**Wolfe line search** uses the standard Wolfe conditions (Armijo `ρ = 1e-4`, curvature `σ = 0.6`).
 Manifold operations: SVD-based **retraction**, projection-based **vector transport**, tangent-space
 **gradient projection**, and the observation projection `P_Ω`.
 
