@@ -1,13 +1,48 @@
-# An Accelerated Riemannian Conjugate Gradient Method for Low-Rank Matrix Completion
+# A Safeguarded Accelerated Riemannian Conjugate-Gradient Method for Low-Rank Matrix Completion
 
-This repository contains the MATLAB implementation and experimental framework for the paper
-*"An Accelerated Riemannian Conjugate Gradient Method and Its Application to Low-Rank Matrix Completion"*.
+**Ya-qiong Wen¹, Lin-hui Liu¹, Jiao-fen Li¹·²**
 
-It implements an accelerated Riemannian conjugate gradient (ARCG) method with a Wolfe line search
-for **low-rank matrix completion** — recovering a low-rank matrix `X` from a small set of observed
-entries `P_Ω(X)` of a matrix `A`. Seven CG update variants share one unified interface and are
-compared across five application scenarios: synthetic low-rank recovery, grayscale image
-inpainting, block-missing image recovery, traffic-flow completion, and movie-rating prediction.
+1. *School of Mathematics and Computing Science, Guangxi Colleges and Universities Key Laboratory
+   of Data Analysis and Computation, Guilin University of Electronic Technology, Guilin 541004, China*
+2. *Center for Applied Mathematics of Guangxi (GUET), Guilin 541004, China*
+
+---
+
+## Abstract
+
+We consider least-squares matrix completion on the smooth manifold of matrices with prescribed
+rank. A Riemannian conjugate-gradient scheme is developed by combining an improved
+Hestenes–Stiefel-type coefficient with a secant-based scaling of the accepted line-search step.
+The scaling is **safeguarded**: an accelerated trial point is used only when it satisfies the same
+strong Wolfe conditions as the baseline step, and the conjugate direction is restarted whenever it
+fails uniform descent or norm bounds. These safeguards resolve the mismatch that otherwise arises
+between an accelerated update and a convergence proof based on the unscaled line-search point.
+Under the assumptions of compact level sets and a uniformly Lipschitz continuous pullback
+derivative, the full gradient sequence is guaranteed to converge, as established via the
+Riemannian–Zoutendijk condition. Numerical experiments on synthetic instances, MovieLens ratings,
+PeMS traffic data, and image inpainting illustrate the practical behavior of the method relative
+to several classical Riemannian conjugate-gradient formulas and application-specific baselines.
+
+**Mathematics Subject Classification:** 65K10; 90C30; 15A83
+
+**Keywords:** Low-rank matrix completion; Riemannian optimization; conjugate-gradient method;
+fixed-rank manifold; strong Wolfe line search
+
+---
+
+## Repository overview
+
+This repository contains the MATLAB implementation and the experimental framework for the paper
+*"A Safeguarded Accelerated Riemannian Conjugate-Gradient Method for Low-Rank Matrix Completion"*.
+
+It implements the safeguarded accelerated Riemannian conjugate-gradient (ARCG) method with a
+strong Wolfe line search for **low-rank matrix completion** — recovering a low-rank matrix `X`
+from a small set of observed entries `P_Ω(X)` of a matrix `A`. The proposed method combines an
+improved Hestenes–Stiefel-type (NHS) coefficient with a secant-based scaling of the accepted
+line-search step, safeguarded by strong Wolfe acceptance and restart on failure of uniform
+descent / norm bounds. Seven CG update variants share one unified interface and are compared
+across five application scenarios: synthetic low-rank recovery, grayscale image inpainting,
+block-missing image recovery, traffic-flow completion, and movie-rating prediction.
 
 ---
 
@@ -117,12 +152,12 @@ argument:
 | `FR`     | Fletcher–Reeves |
 | `PRP`    | Polak–Ribière–Polyak |
 | `HS`     | Hestenes–Stiefel |
-| `NHS`    | hybrid (non-negative) |
-| `Alg1`   | the proposed accelerated variant (two-step retraction) |
+| `NHS`    | improved Hestenes–Stiefel-type (hybrid, non-negative) — the coefficient used by the proposed method |
+| `Alg1`   | **the proposed safeguarded accelerated variant**: NHS coefficient + secant-based scaling of the accepted step, with safeguarded acceptance (strong Wolfe) and restart on failure of uniform descent / norm bounds |
 
-**Wolfe line search** uses Armijo `ρ = 1e-4` and curvature `σ = 0.6`. Manifold operations:
-SVD-based **retraction**, projection-based **vector transport**, tangent-space **gradient
-projection**, and the observation projection `P_Ω`.
+**Wolfe line search** uses the strong Wolfe conditions (Armijo `ρ = 1e-4`, curvature `σ = 0.6`).
+Manifold operations: SVD-based **retraction**, projection-based **vector transport**, tangent-space
+**gradient projection**, and the observation projection `P_Ω`.
 
 ---
 
@@ -319,11 +354,12 @@ If you use this code, please cite the accompanying paper:
 
 ```bibtex
 @article{ARCGM,
-  title   = {An Accelerated Riemannian Conjugate Gradient Method and Its Application to
-             Low-Rank Matrix Completion},
-  author  = {},
+  title   = {A Safeguarded Accelerated Riemannian Conjugate-Gradient Method
+             for Low-Rank Matrix Completion},
+  author  = {Wen, Ya-qiong and Liu, Lin-hui and Li, Jiao-fen},
   journal = {},
-  year    = {2026}
+  year    = {2026},
+  note    = {Mathematics Subject Classification: 65K10; 90C30; 15A83}
 }
 ```
 
