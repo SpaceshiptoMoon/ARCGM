@@ -6,27 +6,8 @@
    of Data Analysis and Computation, Guilin University of Electronic Technology, Guilin 541004, China*
 2. *Center for Applied Mathematics of Guangxi (GUET), Guilin 541004, China*
 
----
-
-## Abstract
-
-We consider least-squares matrix completion on the smooth manifold of matrices with prescribed
-rank. A Riemannian conjugate-gradient scheme is developed by combining an improved
-Hestenes–Stiefel-type coefficient with a secant-based scaling of the accepted line-search step.
-The scaling is **safeguarded**: an accelerated trial point is used only when it satisfies the same
-strong Wolfe conditions as the baseline step, and the conjugate direction is restarted whenever it
-fails uniform descent or norm bounds. These safeguards resolve the mismatch that otherwise arises
-between an accelerated update and a convergence proof based on the unscaled line-search point.
-Under the assumptions of compact level sets and a uniformly Lipschitz continuous pullback
-derivative, the full gradient sequence is guaranteed to converge, as established via the
-Riemannian–Zoutendijk condition. Numerical experiments on synthetic instances, MovieLens ratings,
-PeMS traffic data, and image inpainting illustrate the practical behavior of the method relative
-to several classical Riemannian conjugate-gradient formulas and application-specific baselines.
-
-**Mathematics Subject Classification:** 65K10; 90C30; 15A83
-
-**Keywords:** Low-rank matrix completion; Riemannian optimization; conjugate-gradient method;
-fixed-rank manifold; strong Wolfe line search
+> **Paper:** *A Safeguarded Accelerated Riemannian Conjugate-Gradient Method for Low-Rank Matrix
+> Completion* — Abstract, MSC and keywords are available on the paper page (link/DOI to be added).
 
 ---
 
